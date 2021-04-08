@@ -1,0 +1,4 @@
+tkn pipeline start s2i-php-pipeline -p IMAGE=image-registry.openshift-image-registry.svc:5000/bluebit/do-app -p TLSVERIFY=false  -w name=shared-workspace,volumeClaimTemplateFile=https://raw.githubusercontent.com/openshift/pipelines-tutorial/pipelines-1.3/01_pipeline/03_persistent_volume_claim.yaml
+
+
+tkn pipeline start s2i-php-pipeline -p IMAGE=image-registry.openshift-image-registry.svc:5000/greenbit/do-app -p TLSVERIFY=false  -w name=shared-workspace,claimName=source-pvc -s pipeline
