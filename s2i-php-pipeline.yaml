@@ -1,0 +1,43 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: s2i-php-pipeline
+spec:
+  params:
+    - name: IMAGE
+      description: Location of the repo where image has to be pushed
+      type: string
+    - name: TLSVERIFY
+      description: Verify the TLS on the registry endpoint (for push/pull to a non-TLS registry)
+      type: string
+  workspaces:
+    - name: shared-workspace
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: https://github.com/dandan2000/php-app
+        - name: deleteExisting
+          value: "true"
+        - name: revision
+          value: "main"
+    - name: s2i
+      taskRef:
+        name: s2i-php
+        kind: ClusterTask
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: IMAGE
+          value: $(params.IMAGE)
+        - name: TLSVERIFY
+          value: $(params.TLSVERIFY)
+      runAfter:
+        - fetch-repository
